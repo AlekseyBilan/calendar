@@ -1,0 +1,139 @@
+$text-color: #656565;
+$grey: #A7A7A7;
+$calendar-width: 390px;
+$border-color: #505C6D;
+$content-padding: 11px;
+$text-white-color: #F3F4F5;
+$red-btn-color: #ED1C24;
+$calendar-color: #4B596A !important;
+
+html, body{
+  margin: 0;
+  padding: 0;
+}
+
+html, body, select, input, button {
+  color: $text-color;
+  font-size: 16px;
+  font-family: Tahoma, sans-serif;
+}
+
+#date-picker {
+  width: $calendar-width;
+  border: 2px solid $border-color;
+
+  .header {
+    height: 37px;
+    border-bottom: 2px solid $border-color;
+    display: flex;
+    align-content: space-between;
+    align-items: center;
+
+    .calendar-icon {
+      cursor: default;
+    }
+  }
+
+  .datepicker-layout {
+    width: $calendar-width - 2*$content-padding;
+  }
+  .content {
+    padding: $content-padding;
+
+    .date-from-wrapper, .date-to-wrapper {
+      width: calc(50% - 5px);
+    }
+    .date-from-wrapper {
+      float: left;
+    }
+    .date-to-wrapper {
+      float: right;
+    }
+    .date-text {
+      height: 33px;
+      display: inline-block;
+      line-height: 33px;
+    }
+    .select-dates-section {
+      display: table;
+      width: 100%;
+
+      .calendar-icon-wrapper .date-input {
+        border: none;
+        outline: none;
+        width: calc(88% - 10px);
+        padding-left: 10px;
+        cursor: pointer;
+      }
+
+      .calendar-icon-wrapper {
+        border: 2px solid $grey;
+        height: 2.3rem;
+        margin-bottom: -1px;
+        display: flex;
+        align-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        box-sizing: border-box;
+      }
+      .calendar-icon-wrapper.focus {
+        border-color: $border-color;
+      }
+    }
+
+  }
+
+  .actions {
+    text-align: right;
+    margin-top: 14px;
+  }
+  #selected-date-range {
+    width: 90%;
+    padding-left: 10px;
+  }
+  #date-range, #time-zone {
+    width: 100%;
+    height: 2.3rem;
+    border: 2px solid $grey;
+    outline: none;
+  }
+  #date-range:focus, #time-zone:focus {
+    border-color: $border-color;
+  }
+  #date-range {
+    margin-bottom: 15px;
+  }
+  #date-from-container, #date-to-container {
+    position: relative;
+  }
+
+  .calendar-icon {
+    color: $calendar-color;
+    cursor: pointer;
+  }
+
+  i.calendar-icon svg {
+    width: auto;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .btn {
+    outline: none;
+    width: 75px;
+    height: 31px;
+    cursor: pointer;
+  }
+  #btn-apply {
+    background-color: $red-btn-color;
+    border: 2px solid $red-btn-color;
+    color: $text-white-color;
+  }
+  #btn-reset {
+    border: 2px solid $grey;
+    margin-right: $content-padding;
+    padding: 0;
+    background: $text-white-color;
+  }
+}

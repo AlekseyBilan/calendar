@@ -1,0 +1,64 @@
+$white: #fff;
+$border-color: #505C6D;
+$background-dark-blue: #505C6D;
+$text-white-color: #F3F4F5;
+$text-gray-color: #545454;
+$text-disabled-color: #C1C1C1;
+$text-color: #656565;
+$text-blue-color: #3C4A5D;
+
+.datepicker-layout {
+  background: $white;
+  border: 2px solid $border-color;
+  position: absolute;
+  margin-top: -2px;
+  tr {
+    height: 53px;
+  }
+  .next-month-wrap {
+    text-align: right;
+  }
+  .content td {
+    height: 53px;
+    width: 53px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .day {
+    cursor: pointer;
+  }
+  .empty {
+    cursor: default;
+    color: $text-disabled-color;
+  }
+
+  .active, .today {
+    border: 2px solid $border-color;
+    border-radius: 50%;
+  }
+
+  .active {
+    background-color: $border-color;
+    color: $text-white-color;
+  }
+
+  .month-year-text, .days-week-name {
+    font-weight: bold;
+    color: $text-blue-color;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .next-month, .prev-month {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: $text-blue-color;
+    font-weight: bold;
+  }
+}
+
+.datepicker-layout.hide {
+  display: none;
+}
