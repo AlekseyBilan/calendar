@@ -3,7 +3,7 @@ import {Datepicker} from "./datepicker/Datepicker";
 
 window.addEventListener('DOMContentLoaded', function () {
     /*Fill select by timeZones*/
-    (function () {
+    (() => {
         const GMTtoRegionName = {
             'GMT +0': 'Greenwich Mean Time',
             'GMT +1': 'Central European Time',
@@ -57,35 +57,34 @@ window.addEventListener('DOMContentLoaded', function () {
         select.innerHTML = option;
     })();
 
-    const datepickerFrom = new Datepicker('date-from-container', null, selectDateCalendarFromHandler);
-    const datepickerTo = new Datepicker('date-to-container', null, selectDateCalendarToHandler);
+    const datepickerFrom = new Datepicker('date-from-container', null, selectDateFromHandler);
+    const datepickerTo = new Datepicker('date-to-container', null, selectDateToHandler);
     const monthShortNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    function clearDateRange() {
+    const clearDateRange = () => {
         datepickerFrom.clear();
         datepickerTo.clear();
         setCustomOptionSelected(0);
-    }
+    };
 
-    function selectDateRange() {
+    const selectDateRange = () => {
         console.log('from ', datepickerFrom.date, 'timestamp = (', datepickerFrom.activeTS, ')');
         console.log('to ', datepickerTo.date, 'timestamp = (', datepickerTo.activeTS, ')');
-    }
+    };
 
-    function changeRange(e) {
-        let range = e.target[this.selectedIndex].getAttribute('data-value');
+    const changeRange = (e) => {
+        let range = e.currentTarget[e.currentTarget.selectedIndex].getAttribute('data-value');
         let date = new Date();
         if (range === 'custom') {
             datepickerTo.render(date, false, true);
         } else {
             date.setDate(date.getDate() - range);
-            datepickerFrom.render(date, false, true, false);
-            datepickerTo.render(new Date(), false, true, false);
+            datepickerFrom.render(date, false, true);
+            datepickerTo.render(new Date(), false, true);
         }
-    }
+    };
 
-    function hideCalendars(e) {
-        e.preventDefault();
+    const hideCalendars = (e) => {
         e.stopImmediatePropagation();
         if (!datepickerFrom.isHide || !datepickerTo.isHide) {
             datepickerFrom.hide();
@@ -93,12 +92,11 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('date-from-wrap').classList.remove('focus');
             document.getElementById('date-to-wrap').classList.remove('focus');
         }
-    }
+    };
 
-    function showCalendar(e) {
-        e.preventDefault();
+    const showCalendar = (e) => {
         e.stopImmediatePropagation();
-        let dataValue = this.getAttribute('data-value');
+        let dataValue = e.currentTarget.getAttribute('data-value');
         if (dataValue === 'date-to') {
             if (!datepickerFrom.isHide) {
                 datepickerFrom.hide();
@@ -115,30 +113,30 @@ window.addEventListener('DOMContentLoaded', function () {
             datepickerFrom.toggleShow();
             document.getElementById('date-from-wrap').classList.toggle('focus');
         }
-    }
+    };
 
-    function selectDateCalendarToHandler(isCustomDaySelected) {
+    function selectDateToHandler(isCustomDaySelected) {
         if (isCustomDaySelected) setCustomOptionSelected();
         document.getElementById('date-to').value = formatDate(this.getSelectedDate());
     }
 
-    function selectDateCalendarFromHandler(isCustomDaySelected) {
+    function selectDateFromHandler(isCustomDaySelected) {
         if (isCustomDaySelected) setCustomOptionSelected();
         document.getElementById('date-from').value = formatDate(this.getSelectedDate());
     }
 
-    function setCustomOptionSelected(value = 'custom') {
+    const setCustomOptionSelected = (value = 'custom') => {
         document.getElementById('date-range').selectedIndex = -1;
         document.getElementById('date-range').selectedIndex = document.querySelector('#date-range option[data-value="' + value + '"]').index;
-    }
+    };
 
-    function setDateRange() {
-        document.getElementById('selected-date-range').innerText = formatDate(datepickerFrom.getSelectedDate()) + '  -  ' + formatDate(datepickerTo.getSelectedDate());
-    }
+    const setDateRange = () => {
+        document.getElementById('selected-date-range').innerText = `${formatDate(datepickerFrom.getSelectedDate())}  -  ${formatDate(datepickerTo.getSelectedDate())}`;
+    };
 
-    function formatDate(date) {
+    const formatDate = (date) => {
         return `${monthShortNames[date.getMonth()]} ${date.getDate()}\,${(date.getFullYear()).toString().slice(-2)}`
-    }
+    };
 
     document.getElementById('btn-reset').addEventListener('click', clearDateRange);
     document.getElementById('btn-apply').addEventListener('click', selectDateRange);
