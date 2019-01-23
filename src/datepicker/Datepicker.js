@@ -1,6 +1,16 @@
 'use strict';
 import './datepicker.scss';
 
+/**
+ * Create instants of Datepicker.
+ *
+ * @constructor
+ * @this  {Datepicker}
+ * @param {string} container id - Datepicker instants will be load there.
+ * @param {object} date - DateObject for calendar.
+ * @param {function} selectDateHandler - call back function, select date action handler.
+ * @param {boolean} visible - flag which tell is the instants will we shown.
+ */
 export class Datepicker {
     constructor(id = date.getTime(), date, selectDateHandler, visible = true) {
         this.date = date || new Date();
@@ -14,15 +24,62 @@ export class Datepicker {
             monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             daysWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
         };
-        this.render();
-        this._init();
+
+        const smartClickHandler = (event) => {
+            event.stopImmediatePropagation();
+            let target =  event.target, classList = target.classList;
+            if (classList.contains('day')) {
+                this.activeTS = target.getAttribute('data-timestamp');
+                this._setSelectedDate(target);
+            } else if (classList.contains('prev-month')) {
+                Datepicker._prevMonth(this);
+            } else if (classList.contains('next-month')) {
+                Datepicker._nextMonth(this);
+            }
+        };
+
+        this.render(this.date, false, false);
+
+        this._addEventHandler(smartClickHandler);
     }
 
-    /*render(date, markSelectedDay, setSelectedDate) - rebuild calendar
-    * date - date obj for build calendar
-    * markSelectedDay - flag to mark selected date
-    * setSelectedDate - flag to run selectDateHandler callback
-    */
+    static _tsToDateObj(timestamp) {
+        let date = new Date();
+        date.setTime(timestamp);
+        return date;
+    }
+
+    static _nextMonth(that) {
+        let m = that.date.getMonth() + 1;
+        let y = that.date.getFullYear();
+        if (m > 11) {
+            y += 1;
+            m = 0;
+        }
+        that.date = new Date(y, m);
+        that.render(that.date, true);
+    }
+
+    static _prevMonth(that) {
+        let m = that.date.getMonth() - 1;
+        let y = that.date.getFullYear();
+        if (m < 0) {
+            y -= 1;
+            m = 11;
+        }
+        that.date = new Date(y, m);
+        that.render(that.date, true);
+    }
+
+    /**
+     * Render instants of Datepicker.
+     *
+     * @constructor
+     * @this  {Datepicker}
+     * @param {object} date - DateObject for calendar.
+     * @param {boolean} markSelectedDay - flag to mark selected date.
+     * @param {boolean} setSelectedDate - flag to run selectDateHandler callback.
+     */
     render(date = this.date, markSelectedDay, setSelectedDate) {
         let year = date.getFullYear();
         let month = date.getMonth();
@@ -34,7 +91,7 @@ export class Datepicker {
         let countDaysMonth = lastDay.getDate();
         let className = this.isHide ? 'datepicker-layout hide' : 'datepicker-layout';
         let timestamp, currentDateInLoop;
-        let selectedDate = (markSelectedDay) ? (this._tsToDateObj(this.activeTS)) : (date);
+        let selectedDate = (markSelectedDay) ? (Datepicker._tsToDateObj(this.activeTS)) : (date);
 
         let datepickerHtml =
             `<table id="${this.datepickerId}" class="${className}"> 
@@ -94,58 +151,19 @@ export class Datepicker {
         }
     }
 
-    _init() {
-        this._addEventHandler();
-    }
-
-    _addEventHandler() {
-        document.getElementById(this.containerId).addEventListener('click', this._getActiveDate.bind(this, event));
-    }
-
-    _nextMonth() {
-        let m = this.date.getMonth() + 1;
-        let y = this.date.getFullYear();
-        if (m > 11) {
-            y += 1;
-            m = 0;
-        }
-        this.date = new Date(y, m);
-        this.render(this.date, true);
-    }
-
-    _prevMonth() {
-        let m = this.date.getMonth() - 1;
-        let y = this.date.getFullYear();
-        if (m < 0) {
-            y -= 1;
-            m = 11;
-        }
-        this.date = new Date(y, m);
-        this.render(this.date, true);
-    }
-
-    _getActiveDate() {
-        arguments[1].preventDefault();
-        arguments[1].stopImmediatePropagation();
-        let target = arguments[1].target;
-        if (target.classList.contains('day')) {
-            this.activeTS = target.getAttribute('data-timestamp');
-            this._setSelectedDate(target);
-        } else if (target.classList.contains('prev-month')) {
-            this._prevMonth();
-        } else if (target.classList.contains('next-month')) {
-            this._nextMonth();
-        }
+    /**
+     * _addEventHandler add click Event Listener to the instants of Datepicker.
+     *
+     * @constructor
+     * @this  {Datepicker}
+     * @param {function} smartClickHandler - function which get event object and decide how to handle it, using css class for it.
+     */
+    _addEventHandler(smartClickHandler) {
+        document.getElementById(this.containerId).addEventListener('click', smartClickHandler);
     }
 
     getSelectedDate(timestamp = this.activeTS) {
-        return this._tsToDateObj(timestamp);
-    }
-
-    _tsToDateObj(timestamp) {
-        let date = new Date();
-        date.setTime(timestamp);
-        return date;
+        return Datepicker._tsToDateObj(timestamp);
     }
 
     _setSelectedDate(target) {
