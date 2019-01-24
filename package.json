@@ -14,9 +14,9 @@
   },
   "author": "Oleksii Bilan",
   "bugs": {
-    "url": "https://github.com/"
+    "url": "https://github.com/AlekseyBilan/calendar"
   },
-  "homepage": "https://github.com/",
+  "homepage": "https://github.com/AlekseyBilan/calendar",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

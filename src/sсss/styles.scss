@@ -21,7 +21,7 @@ html, body, select, input, button {
 #date-picker {
   width: $calendar-width;
   border: 2px solid $border-color;
-  margin: calc(50vh - 135px) auto;// 135px - calendar height/2
+  margin: 4rem auto;// 135px - calendar height/2
 
   .header {
     height: 37px;
