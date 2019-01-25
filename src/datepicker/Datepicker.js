@@ -16,31 +16,20 @@ export class Datepicker {
         this.date = date || new Date();
         this.selectDateHandler = selectDateHandler;
         this.activeTS = null;
-        this.today = new Date();
         this.containerId = id;
         this.datepickerId = this.date.getTime();
         this.isHide = visible;
-        this.staticData = {
-            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-            daysWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-        };
-
-        const smartClickHandler = (event) => {
-            event.stopImmediatePropagation();
-            let target =  event.target, classList = target.classList;
-            if (classList.contains('day')) {
-                this.activeTS = target.getAttribute('data-timestamp');
-                this._setSelectedDate(target);
-            } else if (classList.contains('prev-month')) {
-                Datepicker._prevMonth(this);
-            } else if (classList.contains('next-month')) {
-                Datepicker._nextMonth(this);
-            }
-        };
 
         this.render(this.date, false, false);
 
-        this._addEventHandler(smartClickHandler);
+        document.getElementById(this.containerId).addEventListener('click', Datepicker.smartClickHandler.bind(this));
+    }
+
+    static getStaticData(){
+        return {
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            daysWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+        }
     }
 
     static _tsToDateObj(timestamp) {
@@ -71,6 +60,19 @@ export class Datepicker {
         that.render(that.date, true);
     }
 
+    static smartClickHandler (event){
+        event.stopImmediatePropagation();
+        let target =  event.target, classList = target.classList;
+        if (classList.contains('day')) {
+            this.activeTS = target.getAttribute('data-timestamp');
+            this._setSelectedDate(target);
+        } else if (classList.contains('prev-month')) {
+            Datepicker._prevMonth(this);
+        } else if (classList.contains('next-month')) {
+            Datepicker._nextMonth(this);
+        }
+    };
+
     /**
      * Render instants of Datepicker.
      *
@@ -81,6 +83,7 @@ export class Datepicker {
      * @param {boolean} setSelectedDate - flag to run selectDateHandler callback.
      */
     render(date = this.date, markSelectedDay, setSelectedDate) {
+        let today = new Date();
         let year = date.getFullYear();
         let month = date.getMonth();
         let firstDay = new Date(year, month, 1);
@@ -92,23 +95,24 @@ export class Datepicker {
         let className = this.isHide ? 'datepicker-layout hide' : 'datepicker-layout';
         let timestamp, currentDateInLoop;
         let selectedDate = (markSelectedDay) ? (Datepicker._tsToDateObj(this.activeTS)) : (date);
+        let staticData = Datepicker.getStaticData();
 
         let datepickerHtml =
             `<table id="${this.datepickerId}" class="${className}"> 
                 <thead>
                     <tr>
                         <td class="prev-month-wrap"><button class="prev-month"><</button>
-                        <td colspan="5" class="month-year-text">${this.staticData.monthNames[month] + ' ' + year}</td>
+                        <td colspan="5" class="month-year-text">${staticData.monthNames[month] + ' ' + year}</td>
                         <td class="next-month-wrap"><button class="next-month">></button></td>
                     </tr>
                     <tr class="days-week-name">
-                        <td>${this.staticData.daysWeek[0]}</td>
-                        <td>${this.staticData.daysWeek[1]}</td>
-                        <td>${this.staticData.daysWeek[2]}</td>
-                        <td>${this.staticData.daysWeek[3]}</td>
-                        <td>${this.staticData.daysWeek[4]}</td>
-                        <td>${this.staticData.daysWeek[5]}</td>
-                        <td>${this.staticData.daysWeek[6]}</td>
+                        <td>${staticData.daysWeek[0]}</td>
+                        <td>${staticData.daysWeek[1]}</td>
+                        <td>${staticData.daysWeek[2]}</td>
+                        <td>${staticData.daysWeek[3]}</td>
+                        <td>${staticData.daysWeek[4]}</td>
+                        <td>${staticData.daysWeek[5]}</td>
+                        <td>${staticData.daysWeek[6]}</td>
                     </tr>
                 </thead>
             <tbody class="content">`;
@@ -129,7 +133,7 @@ export class Datepicker {
                     calendarHtml += '</tr><tr>';
                 }
             }
-            if (i === this.today.getDate() && this.today.getMonth() === month && this.today.getFullYear() === year) {
+            if (i === today.getDate() && today.getMonth() === month && today.getFullYear() === year) {
                 calendarHtml += '<td class="day today" data-timestamp="' + timestamp + '">' + i + '</td>';
             } else if (i === selectedDate.getDate() && selectedDate.getMonth() === month && selectedDate.getFullYear() === year) {
                 calendarHtml += '<td class="day active" data-timestamp="' + timestamp + '">' + i + '</td>';
@@ -149,17 +153,6 @@ export class Datepicker {
             this.activeTS = date.getTime();
             this.setSelectedDate();
         }
-    }
-
-    /**
-     * _addEventHandler add click Event Listener to the instants of Datepicker.
-     *
-     * @constructor
-     * @this  {Datepicker}
-     * @param {function} smartClickHandler - function which get event object and decide how to handle it, using css class for it.
-     */
-    _addEventHandler(smartClickHandler) {
-        document.getElementById(this.containerId).addEventListener('click', smartClickHandler);
     }
 
     getSelectedDate(timestamp = this.activeTS) {
@@ -187,6 +180,20 @@ export class Datepicker {
         this.activeTS = null;
         this.render(this.date, false, true);
     }
+
+    /**
+     * remove - remove click Event Listener and html from the DOM.
+     *
+     * @constructor
+     * @this  {Datepicker} instants of Datepicker (child)
+     */
+    remove (smartClickHandler = Datepicker.smartClickHandler){
+        console.log('this', this);
+        console.log('DS', Datepicker.smartClickHandler, smartClickHandler);
+        let htmlLayout = document.getElementById(this.containerId);
+        htmlLayout.removeEventListener('click', Datepicker.smartClickHandler);
+        htmlLayout.remove();
+    };
 
     toggleShow() {
         this.isHide = !this.isHide;
